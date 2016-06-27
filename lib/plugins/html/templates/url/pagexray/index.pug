@@ -20,6 +20,11 @@ table
 - totalHeaderSize = 0
 - totalRequests = 0
 h3 Requests and sizes per content type
+  div(style='width:400px; margin: auto; padding:40px 0;')
+    canvas(id='myChart' width='400' height='400')
+    script.
+      var requestData = [];
+      var requestType = [];
 .responsive
   table
     +rowHeading(['Content', 'Header Size', 'Transfer Size', 'Content Size', 'Requests'])
@@ -29,9 +34,12 @@ h3 Requests and sizes per content type
       - totalHeaderSize += data.headerSize > 0 ? data.headerSize : 0
       - totalRequests += data.requests
       if data.requests > 0
+        script.
+          requestData.push(#{data.requests});
+          requestType.push('#{type}');
         tr
           td(data-title='type') #{type}
-          +sizeCell('headerSize', data.headerSize)  
+          +sizeCell('headerSize', data.headerSize)
           +sizeCell('transferSize', data.transferSize)
           +sizeCell('contentSize', data.contentSize)
           +numberCell('requests', data.requests)
@@ -72,3 +80,30 @@ h3 Expires and last modified stats
       +durationCell('min', lastModified.min)
       +durationCell('median', lastModified.median)
       +durationCell('max', lastModified.max)
+  script.
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+          type: 'doughnut',
+          animation:{
+              animateScale:true
+          },
+          data:{
+              labels: requestType,
+              datasets: [
+                  {
+                      data: requestData,
+                      backgroundColor: [
+                          "#FF6384",
+                          "#36A2EB",
+                          "#FFCE56",
+                          "#FFC",
+                          "#3FF",
+                          "#A3F",
+                          "#C39",
+                          "#B8A",
+                          "#DF7",
+                          "#23C"
+                      ],
+                  }]
+              }
+      });
